@@ -17,11 +17,9 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;700&display=swap" rel="stylesheet">
-    <meta name="theme-color" content="#000000">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black">
-    <link rel="manifest" href="manifest.json">
     <link rel="icon" type="image/x-icon" href="Images/LOGO.png" />
+    <link rel="manifest" href="manifest.json" />
+    <meta name="theme-color" content="#f39d2d" />
     <title>KIMI</title>
 
 
@@ -263,44 +261,32 @@
             }
         }
     </script>
-<!-- Register Service Worker -->
 <script>
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('service-worker.js')
-    .then(() => console.log('Service Worker Registered'))
-    .catch(err => console.error('SW registration failed:', err));
-}
-
-// Install prompt
-let deferredPrompt;
-window.addEventListener('beforeinstallprompt', (e) => {
-  e.preventDefault();
-  deferredPrompt = e;
-  console.log("PWA can be installed!");
-
-  // Optional: create a button to trigger install
-  const btn = document.createElement('button');
-  btn.innerText = "Install KIMI App";
-  btn.style.position = "fixed";
-  btn.style.bottom = "20px";
-  btn.style.right = "20px";
-  btn.style.padding = "10px 20px";
-  btn.style.background = "#f39d2d";
-  btn.style.color = "#fff";
-  btn.style.border = "none";
-  btn.style.borderRadius = "8px";
-  btn.style.cursor = "pointer";
-
-  btn.onclick = () => {
-    deferredPrompt.prompt();
-    deferredPrompt.userChoice.then((choice) => {
-      console.log(choice.outcome);
-      deferredPrompt = null;
-      btn.remove();
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('sw.js')
+        .then(reg => console.log('Service Worker registered', reg))
+        .catch(err => console.log('Service Worker registration failed', err));
     });
-  };
-  document.body.appendChild(btn);
-});
+  }
+
+  // Optional: PWA install prompt handling
+  let deferredPrompt;
+  window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+    const btn = document.createElement('button');
+    btn.textContent = 'Install KIMI';
+    btn.className = 'btnlogin';
+    document.body.appendChild(btn);
+    btn.addEventListener('click', async () => {
+      btn.style.display = 'none';
+      deferredPrompt.prompt();
+      const choiceResult = await deferredPrompt.userChoice;
+      console.log(choiceResult.outcome);
+      deferredPrompt = null;
+    });
+  });
 </script>
 </body>
 </html>

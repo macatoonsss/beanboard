@@ -1,10 +1,11 @@
 {
   "name": "KIMI",
   "short_name": "KIMI",
-  "start_url": "./index.html",
+  "description": "Welcome to KIMI app",
+  "start_url": "index.html",
   "display": "standalone",
   "background_color": "#000000",
-  "theme_color": "#000000",
+  "theme_color": "#f39d2d",
   "icons": [
     {
       "src": "Images/LOGO.png",
