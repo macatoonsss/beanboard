@@ -263,12 +263,44 @@
             }
         }
     </script>
-    <script>
-        if ("serviceWorker" in navigator) {
-        navigator.serviceWorker.register("service-worker.js")
-            .then(() => console.log("Service Worker Registered"))
-            .catch(err => console.log("SW error:", err));
-        }
-    </script>
+<!-- Register Service Worker -->
+<script>
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('service-worker.js')
+    .then(() => console.log('Service Worker Registered'))
+    .catch(err => console.error('SW registration failed:', err));
+}
+
+// Install prompt
+let deferredPrompt;
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+  console.log("PWA can be installed!");
+
+  // Optional: create a button to trigger install
+  const btn = document.createElement('button');
+  btn.innerText = "Install KIMI App";
+  btn.style.position = "fixed";
+  btn.style.bottom = "20px";
+  btn.style.right = "20px";
+  btn.style.padding = "10px 20px";
+  btn.style.background = "#f39d2d";
+  btn.style.color = "#fff";
+  btn.style.border = "none";
+  btn.style.borderRadius = "8px";
+  btn.style.cursor = "pointer";
+
+  btn.onclick = () => {
+    deferredPrompt.prompt();
+    deferredPrompt.userChoice.then((choice) => {
+      console.log(choice.outcome);
+      deferredPrompt = null;
+      btn.remove();
+    });
+  };
+  document.body.appendChild(btn);
+});
+</script>
 </body>
 </html>
