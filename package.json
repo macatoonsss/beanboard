@@ -1,0 +1,22 @@
+{
+  "name": "beanboard",
+  "version": "1.0.0",
+  "description": "PWA KIMI",
+  "homepage": "https://github.com/macatoonsss/beanboard#readme",
+  "bugs": {
+    "url": "https://github.com/macatoonsss/beanboard/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/macatoonsss/beanboard.git"
+  },
+  "license": "ISC",
+  "author": "macatoonsss",
+  "type": "commonjs",
+  "main": "service-worker.js",
+  "scripts": {
+    "start": "serve .",
+    "dev": "serve .",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  }
+}
