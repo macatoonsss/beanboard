@@ -23,10 +23,10 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore.js"></script>
 
     <!-- Your firebase-config.js -->
     <script src="firebase-config.js"></script>
+    <script src="auth.js"></script>
 
 
     <style>
@@ -276,10 +276,6 @@
                         </p>
                     </form>
 
-                    <!-- Firebase Configuration and Auth Scripts -->
-                    <script src="firebase-config.js"></script>
-                    <script src="auth.js"></script>
-
                     <script>
                         function togglePassword(){
                             const password=document.getElementById("password");
@@ -323,6 +319,7 @@
 
                         async function handleLogin(event) {
                             event.preventDefault();
+                            console.log('handleLogin clicked');
                             const username = document.getElementById('username').value;
                             const password = document.getElementById('password').value;
 
@@ -339,6 +336,7 @@
 
                         async function handleSignup(event) {
                             event.preventDefault();
+                            console.log('handleSignup clicked');
                             const firstName = document.getElementById('signupFirstName').value;
                             const lastName = document.getElementById('signupLastName').value;
                             const username = document.getElementById('signupUsername').value;
@@ -361,7 +359,7 @@
                         }
 
                         // Check if user is already logged in
-                        onAuthStateChanged(auth, (user) => {
+                        auth.onAuthStateChanged((user) => {
                             if (user) {
                                 // User is logged in, redirect to main page
                                 window.location.href = 'main.html';
