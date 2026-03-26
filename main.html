@@ -15,6 +15,12 @@
     <title>KIMI</title>
     <link rel="icon" type="image/x-icon" href="Images/LOGO.png">
     <link rel="stylesheet" href="main_style.css">
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.5.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.5.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.5.0/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.5.0/firebase-firestore.js"></script>
 </head>
 
 <body>
@@ -42,6 +48,7 @@
                 <h5>NOTIFICATIONS</h5>
                 <h5>ACCOUNT</h5>
                 <h5>SETTINGS</h5>
+                <button onclick="logOut()" style="background: none; border: none; color: white; cursor: pointer; width: 100%; text-align: left; padding: 10px 0; font-size: 16px; font-weight: bold;">LOG OUT</button>
                 <div class="profile">
                     <img src="Images/PROFILE.png" alt="avatar" class="avatar" />
 
@@ -72,7 +79,7 @@
 
                     <!-- Text area container -->
                     <div class="post-input-area">
-                        <textarea placeholder="What's happening?" rows="1"></textarea>
+                        <textarea id="postInput" placeholder="What's happening?" rows="1"></textarea>
                         <div class="post-actions">
                             <div class="icons">
                                 <i class="fa-regular fa-image"></i>
@@ -80,7 +87,7 @@
                                 <i class="fa-solid fa-calendar"></i>
                                 <i class="fa-solid fa-location-dot"></i>
                             </div>
-                            <button class="post-btn">Post</button>
+                            <button class="post-btn" onclick="submitPost()">Post</button>
                         </div>
                     </div>
                 </div>
@@ -141,28 +148,7 @@
 
                 <!-- Following posts -->
                 <div class="flg">
-                    <div class="post">
-                        <div class="post-header">
-                            <img src="Images/Vexana.png" class="post-profile">
-                            <div class="user-info">
-                                <span class="name">Vexana</span>
-                                <span class="username">@vexana</span>
-                            </div>
-                        </div>
-                        <h5 class="caption">I was supposed to marry him in this gown</h5>
-                        <img src="Images/Vexana.png" class="post-image">
-                        <div class="post-buttons">
-                            <i class="fa-regular fa-heart"></i>
-                            <i class="fa-regular fa-comment"></i>
-                        </div>
-                        <div class="comment-add">
-                            <img src="Images/PROFILE.png" class="user-profile">
-                            <div class="comment-addtext">
-                                <textarea class="comment-input" placeholder="Add a comment"></textarea>
-                                <button class="comment-btn"><i class="fa-solid fa-paper-plane"></i></button>
-                            </div>
-                        </div>
-                    </div>
+                    <!-- Posts will be loaded here -->
                 </div>
             </div>
         </div>
@@ -255,5 +241,247 @@
             switchTab(0);
         });
     </script>
-</body>
-</html>
+
+    <!-- Firebase Configuration and Scripts -->
+    <script src="firebase-config.js"></script>
+    <script src="auth.js"></script>
+    <script src="database.js"></script>
+
+    <script>
+        // Check if user is authenticated
+        firebase.auth().onAuthStateChanged(async (user) => {
+            if (!user) {
+                // User not logged in, redirect to login page
+                window.location.href = 'index.html';
+            } else {
+                // Load posts when page loads
+                loadFeed();
+            }
+        });
+
+        // Load feed posts
+        async function loadFeed() {
+            try {
+                const posts = await getAllPosts();
+                const feed = document.querySelector('.fyp');
+                
+                if (feed) {
+                    feed.innerHTML = ''; // Clear existing posts
+                    
+                    if (posts.length === 0) {
+                        feed.innerHTML = '<p style="color: white; text-align: center; padding: 20px;">No posts yet. Be the first to post!</p>';
+                        return;
+                    }
+
+                    for (const post of posts) {
+                        const postElement = createPostElement(post);
+                        feed.appendChild(postElement);
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading feed:', error);
+            }
+        }
+
+        // Create a post element
+        function createPostElement(post) {
+            const postDiv = document.createElement('div');
+            postDiv.className = 'post';
+
+            const userName = post.user?.username || 'Unknown User';
+            const userEmail = post.user?.email || '';
+            const profileImage = post.user?.profileImage || 'Images/PROFILE.png';
+
+            const timeAgo = getTimeAgo(post.createdAt);
+
+            postDiv.innerHTML = `
+                <div class="post-header">
+                    <img src="${profileImage}" class="post-profile" alt="Profile">
+                    <div class="user-info">
+                        <span class="name">${userName}</span>
+                        <span class="username">@${userEmail.split('@')[0]}</span>
+                        <span class="post-time" style="color: #999; font-size: 12px;">${timeAgo}</span>
+                    </div>
+                </div>
+                <h5 class="caption">${post.content}</h5>
+                ${post.imageUrl ? `<img src="${post.imageUrl}" class="post-image">` : ''}
+                <div class="post-buttons">
+                    <button onclick="likePostUI('${post.id}')" style="background: none; border: none; cursor: pointer; color: white;">
+                        <i class="fa-regular fa-heart"></i>
+                    </button>
+                    <button onclick="toggleComments('comment-section-${post.id}')" style="background: none; border: none; cursor: pointer; color: white;">
+                        <i class="fa-regular fa-comment"></i>
+                    </button>
+                </div>
+                <div id="comment-section-${post.id}" style="display: none;">
+                    <div id="comments-${post.id}"></div>
+                    <div class="comment-add">
+                        <img src="${window.currentUserData?.profileImage || 'Images/PROFILE.png'}" class="user-profile">
+                        <div class="comment-addtext">
+                            <textarea class="comment-input" placeholder="Add a comment" id="comment-input-${post.id}"></textarea>
+                            <button class="comment-btn" onclick="submitComment('${post.id}')"><i class="fa-solid fa-paper-plane"></i></button>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            return postDiv;
+        }
+
+        // Submit a new post
+        async function submitPost() {
+            const postInput = document.getElementById('postInput');
+            const content = postInput.value.trim();
+            const user = firebase.auth().currentUser;
+
+            if (!content) {
+                alert('Please write something to post');
+                return;
+            }
+
+            if (!user) {
+                alert('You must be logged in to post');
+                return;
+            }
+
+            try {
+                await createPost(user.uid, content, null);
+                postInput.value = '';
+                alert('Post created successfully!');
+                loadFeed();
+            } catch (error) {
+                console.error('Error creating post:', error);
+                alert('Failed to create post');
+            }
+        }
+
+        // Like/Unlike a post
+        async function likePostUI(postId) {
+            try {
+                const user = firebase.auth().currentUser;
+                if (!user) {
+                    alert('You must be logged in to like posts');
+                    return;
+                }
+                await likePost(postId, user.uid);
+                loadFeed();
+            } catch (error) {
+                console.error('Error liking post:', error);
+            }
+        }
+
+        // Toggle comments section
+        function toggleComments(id) {
+            const commentSection = document.getElementById(id);
+            if (commentSection) {
+                commentSection.style.display = commentSection.style.display === 'none' ? 'block' : 'none';
+                
+                // Load comments if showing
+                if (commentSection.style.display === 'block') {
+                    const postId = id.replace('comment-section-', '');
+                    loadComments(postId);
+                }
+            }
+        }
+
+        // Load comments for a post
+        async function loadComments(postId) {
+            try {
+                const comments = await getPostComments(postId);
+                const commentsDiv = document.getElementById(`comments-${postId}`);
+                
+                if (commentsDiv) {
+                    commentsDiv.innerHTML = '';
+                    
+                    for (const comment of comments) {
+                        const commentElement = document.createElement('div');
+                        commentElement.className = 'comment-item';
+                        commentElement.innerHTML = `
+                            <img src="${comment.user?.profileImage || 'Images/PROFILE.png'}" class="commentor-profile">
+                            <div class="comment-text">
+                                <span class="commentor-name">${comment.user?.username || 'Unknown'}</span>
+                                <span class="comment-cap">${comment.commentText}</span>
+                                <span class="comment-time" style="color: #999; font-size: 11px;">${getTimeAgo(comment.createdAt)}</span>
+                            </div>
+                        `;
+                        commentsDiv.appendChild(commentElement);
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading comments:', error);
+            }
+        }
+
+        // Submit a comment
+        async function submitComment(postId) {
+            try {
+                const user = firebase.auth().currentUser;
+                if (!user) {
+                    alert('You must be logged in to comment');
+                    return;
+                }
+
+                const commentInput = document.getElementById(`comment-input-${postId}`);
+                const commentText = commentInput.value.trim();
+
+                if (!commentText) {
+                    alert('Please write a comment');
+                    return;
+                }
+
+                await addComment(postId, user.uid, commentText);
+                commentInput.value = '';
+                await loadComments(postId);
+            } catch (error) {
+                console.error('Error submitting comment:', error);
+                alert('Failed to submit comment');
+            }
+        }
+
+        // Helper function to get time ago
+        function getTimeAgo(date) {
+            if (!date) return 'Just now';
+            
+            if (typeof date.toDate === 'function') {
+                date = date.toDate();
+            }
+
+            const now = new Date();
+            const seconds = Math.floor((now - date) / 1000);
+
+            if (seconds < 60) return 'now';
+            if (seconds < 3600) return Math.floor(seconds / 60) + 'm ago';
+            if (seconds < 86400) return Math.floor(seconds / 3600) + 'h ago';
+            if (seconds < 2592000) return Math.floor(seconds / 86400) + 'd ago';
+            
+            return date.toLocaleDateString();
+        }
+
+        function switchTab(index){
+            const tabs = document.querySelectorAll(".tab");
+            const fyp = document.querySelector(".fyp");
+            const flg = document.querySelector(".flg");
+            const slider = document.querySelector(".slider");
+
+            // Remove active class from all tabs
+            tabs.forEach(tab => tab.classList.remove("active"));
+            tabs[index].classList.add("active");
+
+            // Show/hide posts
+            if(index === 0){
+                fyp.style.display = "block";
+                flg.style.display = "none";
+            } else {
+                fyp.style.display = "none";
+                flg.style.display = "block";
+            }
+
+            // Move slider
+            slider.style.left = index * 50 + "%";
+        }
+
+        // Initialize default view
+        document.addEventListener("DOMContentLoaded", function(){
+            switchTab(0);
+        });
+    </script>
