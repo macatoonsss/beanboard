@@ -1,26 +1,22 @@
 // firebase-config.js
-// Modular imports from global window object in v10
-const { initializeApp } = window.firebase;
-const { getAuth } = window.firebase;
-const { getFirestore } = window.firebase;
 
+// Use global namespace imports (matches the CDN scripts)
 const firebaseConfig = {
-  apiKey: "AIzaSyB9iSZX_Lbn_QkJm0oVFN2-oT3T5qEwSH0",
+  apiKey: "AIzaSyBlcoakJgOnf2woKS-VRORCy33odPEY0s4",
   authDomain: "beanboard-50f1b.firebaseapp.com",
   projectId: "beanboard-50f1b",
   storageBucket: "beanboard-50f1b.appspot.com",
   messagingSenderId: "371025977912",
-  appId: "1:371025977912:web:e824b62082796e981e7ccd"
+  appId: "1:371025977912:web:e824b62082796e981e7ccd",
+  measurementId: "G-68LKL1YK7S"
 };
 
 // Initialize Firebase
-const app = initializeApp(firebaseConfig);
+const app = firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db = firebase.firestore();
 
-// Initialize services
-const auth = getAuth(app);
-const db = getFirestore(app);
-
-// Expose globally if needed
+// Expose globally
 window.auth = auth;
 window.db = db;
 
