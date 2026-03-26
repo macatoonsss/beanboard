@@ -1,4 +1,10 @@
-// Firebase Configuration
+// firebase-config.js
+// Import functions from the Firebase SDK (modular)
+const { initializeApp } = window.firebaseApp;
+const { getAuth } = window.firebaseAuth;
+const { getFirestore } = window.firebaseFirestore;
+
+// Your Firebase configuration
 const firebaseConfig = {
   apiKey: "AIzaSyB9iSZX_Lbn_QkJm0oVFN2-oT3T5qEwSH0",
   authDomain: "beanboard-50f1b.firebaseapp.com",
@@ -9,12 +15,13 @@ const firebaseConfig = {
 };
 
 // Initialize Firebase
-firebase.initializeApp(firebaseConfig);
+const app = initializeApp(firebaseConfig);
 
-// Get references to Firebase services
-const auth = firebase.auth();
-const db = firebase.firestore();
+// Initialize services
+const auth = getAuth(app);
+const db = getFirestore(app);
 
+// Make them globally accessible if needed
 window.firebaseAuth = auth;
 window.firebaseFirestore = db;
 
