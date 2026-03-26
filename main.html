@@ -46,14 +46,17 @@
                 <h5>NOTIFICATIONS</h5>
                 <h5>ACCOUNT</h5>
                 <h5>SETTINGS</h5>
-                <button onclick="logOut()" style="background: none; border: none; color: white; cursor: pointer; width: 100%; text-align: left; padding: 10px 0; font-size: 16px; font-weight: bold;">LOG OUT</button>
-                <div class="profile">
-                    <img src="Images/PROFILE.png" alt="avatar" class="avatar" />
 
-                    <div class="info">
-                        <span class="profname">Hanabi</span>
-                        <span class="profusername">@hanabi</span>
+                <div class="profile">
+                    <div class="profile-left">
+                        <img src="Images/PROFILE.png" alt="avatar" class="avatar" />
+                        <div class="info">
+                            <span class="profname" id="sidebarName"></span>
+                            <span class="profusername" id="sidebarUsername"></span>
+                        </div>
                     </div>
+                    <!-- logout icon triggers logOut() -->
+                    <i class="fa-solid fa-right-from-bracket" onclick="logOut()" style="cursor: pointer;"></i>
                 </div>
             </div>
         </div>
@@ -251,10 +254,24 @@
             if (!user) {
                 // User not logged in, redirect to login page
                 window.location.href = 'index.html';
-            } else {
-                // Load posts when page loads
-                loadFeed();
+                return;
             }
+
+            const profileName = document.getElementById('sidebarName');
+            const profileUsername = document.getElementById('sidebarUsername');
+
+            // Set from auth user
+            if (profileName) profileName.textContent = user.displayName || 'User';
+            if (profileUsername) {
+                if (user.email) {
+                    profileUsername.textContent = `@${user.email.split('@')[0]}`;
+                } else {
+                    profileUsername.textContent = '@unknown';
+                }
+            }
+
+            // Load posts when page loads
+            loadFeed();
         });
 
         // Load feed posts

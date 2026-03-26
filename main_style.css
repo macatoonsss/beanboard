@@ -76,20 +76,27 @@
             margin-top: auto; /* pushes it to the bottom */
             display: flex;
             align-items: center;
-            gap: 10px;
+            justify-content: space-between; /* pushes items to edges */
+        }
+
+        .profile-left {
+            display: flex;
+            align-items: center;
+            gap: 10px; /* space between avatar and info */
         }
 
         .info {
             display: flex;
-            flex-direction: column; /* puts username under name */
+            flex-direction: column; /* username under name */
         }
-        
+
         .avatar {
             width: 50px;
             height: 50px;
-            border-radius: 50%; /* makes it round */
-            object-fit: cover; /* prevents stretching */
+            border-radius: 50%;
+            object-fit: cover;
         }
+
         .profname {
             font-weight: bold;
         }
@@ -97,6 +104,12 @@
         .profusername {
             color: gray;
             font-size: 14px;
+        }
+
+        .profile i {
+            cursor: pointer; /* makes icon clickable */
+            font-size: 20px;
+            color: #e52a16; /* optional */
         }
 
         .sidebar h5{

@@ -1,41 +1,41 @@
 // Fixed auth.js
 
-async function signUp(firstName, lastName, username, password) {
+async function signUp(firstName, lastName, username, password, profileImage = 'Images/PROFILE.png') {
     try {
-        const uniqueEmail = `${username}@kimiapp.local`; // fixed email per username
+        const normalizedUsername = username.trim().toLowerCase();
+        const uniqueEmail = `${normalizedUsername}@beanboard.com`; // changed here
+
         const userCredential = await auth.createUserWithEmailAndPassword(uniqueEmail, password);
         const user = userCredential.user;
 
-        await db.collection('users').doc(user.uid).set({
-            uid: user.uid,
-            firstName,
-            lastName,
-            username,
-            email: uniqueEmail,
-            createdAt: new Date(),
-            bio: '',
-            profileImage: 'Images/PROFILE.png'
+        const fullName = `${firstName.trim()} ${lastName.trim()}`.trim();
+
+        await user.updateProfile({
+            displayName: fullName,
+            photoURL: profileImage
         });
 
         console.log('User signed up successfully:', username);
         return user;
     } catch (error) {
         console.error('Sign up error:', error.message);
-        alert('Sign up failed: ' + error.message);
+        M.toast({html: 'Sign up failed: ' + error.message});
         throw error;
     }
 }
 
 async function logIn(username, password) {
     try {
-        const email = `${username}@kimiapp.local`; // same as signup
+        const normalizedUsername = username.trim().toLowerCase();
+        const email = `${normalizedUsername}@beanboard.com`; // changed here
+
         const userCredential = await auth.signInWithEmailAndPassword(email, password);
         const user = userCredential.user;
 
         localStorage.setItem('userId', user.uid);
         localStorage.setItem('userEmail', email);
 
-        console.log('User logged in successfully:', username);
+        console.log('User logged in successfully:', normalizedUsername);
         return user;
     } catch (error) {
         console.error('Login error:', error.message);

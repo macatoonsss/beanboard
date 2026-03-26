@@ -86,7 +86,7 @@
             border-radius:20px;
             padding:40px;
             width:350px;
-            height:500px;
+            min-height:500px;
             border:1px solid rgba(255,255,255,0.3);
             box-shadow:0 8px 32px rgba(0,0,0,0.2);
             display:flex;
@@ -180,6 +180,9 @@
             cursor:pointer;
             transition:all 0.3s ease;
             margin-top:15px;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
         }
 
         .btnlogin:hover{
@@ -195,7 +198,7 @@
 
         @media only screen and (max-width: 600px) {
             .login-card form {
-                display: flex !important;
+                display: flex;
                 flex-direction: column;
                 align-items: center;
             }
@@ -223,7 +226,7 @@
         <div class="row" style="flex:1; margin:0; display:flex; width:100%;">
             <div class="col s12 m6 hide-on-med-and-down" style="height:100%;"></div>
 
-            <div class="col s12 m6" style="display:flex; align-items:center; justify-content:center; height:100%;">
+            <div class="abc col s12 m6" style="display:flex; align-items:center; justify-content:center; height:100%;">
                 <div class="login-card">
                     <div class="logo-container">
                         <img src="Images/LOGO.png" alt="KIMI Logo" class="logo">
@@ -310,33 +313,32 @@
                         function showSignup() {
                             document.getElementById('loginForm').style.display = 'none';
                             document.getElementById('signupForm').style.display = 'block';
+                            document.querySelector('.login-card').style.height = '600px';
                         }
 
                         function showLogin() {
                             document.getElementById('signupForm').style.display = 'none';
                             document.getElementById('loginForm').style.display = 'block';
+                            document.querySelector('.login-card').style.height = '500px';
                         }
 
-                        async function handleLogin(event) {
-                            event.preventDefault();
-                            const username = document.getElementById('username').value;
-                            const password = document.getElementById('password').value;
-                            const errorEl = document.getElementById('loginError');
+async function handleLogin(event) {
+    event.preventDefault();
+    const username = document.getElementById('username').value;
+    const password = document.getElementById('password').value;
 
-                            errorEl.textContent = ""; // clear previous error
-
-                            try {
-                                await logIn(username, password);
-                                // Redirect after successful login
-                                setTimeout(() => {
-                                    window.location.href = 'main.html';
-                                }, 500);
-                            } catch (error) {
-                                console.error('Login failed:', error);
-                                // Show friendly message instead of alert
-                                errorEl.textContent = "Invalid account";
-                            }
-                        }
+    try {
+        await logIn(username, password);
+        // Redirect after successful login
+        setTimeout(() => {
+            window.location.href = 'main.html';
+        }, 500);
+    } catch (error) {
+        console.error('Login failed:', error);
+        // Show friendly toast instead of alert
+        M.toast({html: 'Invalid account', classes: 'rounded', displayLength: 3000});
+    }
+}
 
                         async function handleSignup(event) {
                             event.preventDefault();
