@@ -1,30 +1,35 @@
 // auth.js (Firebase v10 modular syntax)
 
 // Import modular functions from the window object
-const { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, sendPasswordResetEmail } = window.firebaseAuth;
-const { getFirestore, doc, setDoc, getDoc, updateDoc, collection } = window.firebaseFirestore;
+const { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } = firebase;
+const { getFirestore, doc, setDoc, getDoc, collection, query, where, getDocs } = firebase;
 
 // Use global auth and db instances from firebase-config.js
 const auth = window.auth;
 const db = window.db;
 
 // Sign Up Function
-async function signUp(email, password, username) {
+async function signUp(firstName, lastName, username, password) {
     try {
-        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        // Generate a unique email for Firebase authentication
+        const uniqueEmail = `${username}_${Date.now()}@kimiapp.local`;
+
+        const userCredential = await createUserWithEmailAndPassword(auth, uniqueEmail, password);
         const user = userCredential.user;
 
         // Store user profile in Firestore
         await setDoc(doc(db, 'users', user.uid), {
             uid: user.uid,
+            firstName: firstName,
+            lastName: lastName,
             username: username,
-            email: email,
+            email: uniqueEmail, // Store the generated email
             createdAt: new Date(),
             bio: '',
             profileImage: 'Images/PROFILE.png'
         });
 
-        console.log("User signed up successfully:", user.email);
+        console.log("User signed up successfully:", username);
         return user;
     } catch (error) {
         console.error("Sign up error:", error.message);
@@ -34,16 +39,29 @@ async function signUp(email, password, username) {
 }
 
 // Login Function
-async function logIn(email, password) {
+async function logIn(username, password) {
     try {
+        // Find user by username in Firestore
+        const usersRef = collection(db, 'users');
+        const q = query(usersRef, where('username', '==', username));
+        const querySnapshot = await getDocs(q);
+
+        if (querySnapshot.empty) {
+            throw new Error('User not found');
+        }
+
+        const userDoc = querySnapshot.docs[0];
+        const userData = userDoc.data();
+        const email = userData.email;
+
         const userCredential = await signInWithEmailAndPassword(auth, email, password);
         const user = userCredential.user;
 
-        console.log("User logged in successfully:", user.email);
+        console.log("User logged in successfully:", username);
 
         // Store session info
         localStorage.setItem('userId', user.uid);
-        localStorage.setItem('userEmail', user.email);
+        localStorage.setItem('userEmail', email);
 
         return user;
     } catch (error) {
@@ -99,10 +117,14 @@ onAuthStateChanged(auth, async (user) => {
 // Update UI with user information
 function updateUserUI(userData) {
     const profName = document.querySelector('.profname');
-    if (profName) profName.textContent = userData.username || userData.email;
+    if (profName) {
+        profName.textContent = userData.firstName + ' ' + userData.lastName;
+    }
 
     const profUsername = document.querySelector('.profusername');
-    if (profUsername) profUsername.textContent = '@' + (userData.username || userData.email.split('@')[0]);
+    if (profUsername) {
+        profUsername.textContent = '@' + userData.username;
+    }
 
     const avatars = document.querySelectorAll('.avatar');
     if (avatars.length > 0 && userData.profileImage) {
@@ -129,32 +151,6 @@ async function getCurrentUserData() {
         }
     }
     return null;
-}
-
-// Update user profile
-async function updateUserProfile(userId, updates) {
-    try {
-        await updateDoc(doc(db, 'users', userId), updates);
-        console.log("User profile updated successfully");
-        return true;
-    } catch (error) {
-        console.error("Error updating profile:", error);
-        alert("Failed to update profile: " + error.message);
-        throw error;
-    }
-}
-
-// Password Reset Function
-async function resetPassword(email) {
-    try {
-        await sendPasswordResetEmail(auth, email);
-        console.log("Password reset email sent to:", email);
-        alert("Password reset email sent to " + email);
-    } catch (error) {
-        console.error("Password reset error:", error.message);
-        alert("Password reset failed: " + error.message);
-        throw error;
-    }
 }
 
 console.log("Auth module loaded");

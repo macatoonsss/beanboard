@@ -4,8 +4,8 @@
 // Add a new post
 async function createPost(userId, content, imageUrl = null) {
   try {
-    const postsRef = firebase.firestore().collection('posts');
-    
+    const postsRef = db.collection('posts');
+
     const docRef = await postsRef.add({
       userId: userId,
       content: content,
@@ -27,7 +27,7 @@ async function createPost(userId, content, imageUrl = null) {
 // Get all posts
 async function getAllPosts() {
   try {
-    const postsSnapshot = await firebase.firestore()
+    const postsSnapshot = await db
       .collection('posts')
       .orderBy('createdAt', 'desc')
       .get();
@@ -38,7 +38,7 @@ async function getAllPosts() {
       post.id = doc.id;
 
       // Get user info for this post
-      const userRef = await firebase.firestore().collection('users').doc(post.userId).get();
+      const userRef = await db.collection('users').doc(post.userId).get();
       if (userRef.exists) {
         post.user = userRef.data();
       }
@@ -53,33 +53,10 @@ async function getAllPosts() {
   }
 }
 
-// Get posts by user
-async function getUserPosts(userId) {
-  try {
-    const postsSnapshot = await firebase.firestore()
-      .collection('posts')
-      .where('userId', '==', userId)
-      .orderBy('createdAt', 'desc')
-      .get();
-
-    const posts = [];
-    postsSnapshot.forEach(doc => {
-      const post = doc.data();
-      post.id = doc.id;
-      posts.push(post);
-    });
-
-    return posts;
-  } catch (error) {
-    console.error("Error getting user posts:", error);
-    return [];
-  }
-}
-
 // Like a post
 async function likePost(postId, userId) {
   try {
-    const likesRef = firebase.firestore()
+    const likesRef = db
       .collection('posts')
       .doc(postId)
       .collection('likes')
@@ -108,7 +85,7 @@ async function likePost(postId, userId) {
 // Add comment to post
 async function addComment(postId, userId, commentText) {
   try {
-    const commentsRef = firebase.firestore()
+    const commentsRef = db
       .collection('posts')
       .doc(postId)
       .collection('comments');
@@ -130,7 +107,7 @@ async function addComment(postId, userId, commentText) {
 // Get comments for a post
 async function getPostComments(postId) {
   try {
-    const commentsSnapshot = await firebase.firestore()
+    const commentsSnapshot = await db
       .collection('posts')
       .doc(postId)
       .collection('comments')
@@ -143,7 +120,7 @@ async function getPostComments(postId) {
       comment.id = doc.id;
 
       // Get user info for comment
-      const userRef = await firebase.firestore().collection('users').doc(comment.userId).get();
+      const userRef = await db.collection('users').doc(comment.userId).get();
       if (userRef.exists) {
         comment.user = userRef.data();
       }
@@ -154,40 +131,6 @@ async function getPostComments(postId) {
     return comments;
   } catch (error) {
     console.error("Error getting comments:", error);
-    return [];
-  }
-}
-
-// Delete post
-async function deletePost(postId) {
-  try {
-    await firebase.firestore().collection('posts').doc(postId).delete();
-    console.log("Post deleted successfully");
-  } catch (error) {
-    console.error("Error deleting post:", error);
-    throw error;
-  }
-}
-
-// Search users
-async function searchUsers(searchTerm) {
-  try {
-    const usersSnapshot = await firebase.firestore()
-      .collection('users')
-      .where('username', '>=', searchTerm)
-      .where('username', '<=', searchTerm + '\uf8ff')
-      .get();
-
-    const users = [];
-    usersSnapshot.forEach(doc => {
-      const user = doc.data();
-      user.id = doc.id;
-      users.push(user);
-    });
-
-    return users;
-  } catch (error) {
-    console.error("Error searching users:", error);
     return [];
   }
 }

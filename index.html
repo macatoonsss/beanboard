@@ -6,16 +6,11 @@
     <meta name="viewport" content="width=device-width,initial-scale=1.0" />
 
     <script src="https://kit.fontawesome.com/f1f723bf20.js" crossorigin="anonymous"></script>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
     <link rel="stylesheet" href="main_style.css" />
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
-    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" />
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols" />
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
-    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;700&display=swap" rel="stylesheet">
     <link rel="icon" type="image/x-icon" href="Images/LOGO.png" />
     <link rel="manifest" href="manifest.json" />
@@ -27,7 +22,6 @@
     <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/10.5.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.5.0/firebase-auth.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.5.0/firebase-database.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.5.0/firebase-firestore.js"></script>
 
 
@@ -237,7 +231,7 @@
 
                     <form id="loginForm" onsubmit="handleLogin(event)">
                         <div class="usercon">
-                            <input type="email" id="email" class="usernamefield" placeholder="Email" required>
+                            <input type="text" id="username" class="usernamefield" placeholder="Username" required>
                         </div>
 
                         <div class="passcon">
@@ -255,11 +249,15 @@
                     <!-- Sign Up Form (Hidden by default) -->
                     <form id="signupForm" style="display: none;" onsubmit="handleSignup(event)">
                         <div class="usercon">
-                            <input type="text" id="signupUsername" class="usernamefield" placeholder="Username" required>
+                            <input type="text" id="signupFirstName" class="usernamefield" placeholder="First Name" required>
                         </div>
 
                         <div class="usercon">
-                            <input type="email" id="signupEmail" class="usernamefield" placeholder="Email" required>
+                            <input type="text" id="signupLastName" class="usernamefield" placeholder="Last Name" required>
+                        </div>
+
+                        <div class="usercon">
+                            <input type="text" id="signupUsername" class="usernamefield" placeholder="Username" required>
                         </div>
 
                         <div class="passcon">
@@ -321,11 +319,11 @@
 
                         async function handleLogin(event) {
                             event.preventDefault();
-                            const email = document.getElementById('email').value;
+                            const username = document.getElementById('username').value;
                             const password = document.getElementById('password').value;
 
                             try {
-                                await logIn(email, password);
+                                await logIn(username, password);
                                 // Redirect to main page after successful login
                                 setTimeout(() => {
                                     window.location.href = 'main.html';
@@ -337,8 +335,9 @@
 
                         async function handleSignup(event) {
                             event.preventDefault();
+                            const firstName = document.getElementById('signupFirstName').value;
+                            const lastName = document.getElementById('signupLastName').value;
                             const username = document.getElementById('signupUsername').value;
-                            const email = document.getElementById('signupEmail').value;
                             const password = document.getElementById('signupPassword').value;
 
                             if (password.length < 6) {
@@ -347,7 +346,7 @@
                             }
 
                             try {
-                                await signUp(email, password, username);
+                                await signUp(firstName, lastName, username, password);
                                 alert('Account created successfully! Please log in.');
                                 showLogin();
                                 // Clear form
@@ -358,7 +357,7 @@
                         }
 
                         // Check if user is already logged in
-                        firebase.auth().onAuthStateChanged((user) => {
+                        onAuthStateChanged(auth, (user) => {
                             if (user) {
                                 // User is logged in, redirect to main page
                                 window.location.href = 'main.html';
@@ -371,22 +370,6 @@
         </div>
     </main>
 
-    <script>
-        function togglePassword(){
-            const password=document.getElementById("password");
-            const icon=document.getElementById("toggleIcon");
-
-            if(password.type==="password"){
-                password.type="text";
-                icon.classList.remove("fa-eye");
-                icon.classList.add("fa-eye-slash");
-            }else{
-                password.type="password";
-                icon.classList.remove("fa-eye-slash");
-                icon.classList.add("fa-eye");
-            }
-        }
-    </script>
     <script>
         if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
