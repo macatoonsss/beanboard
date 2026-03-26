@@ -32,7 +32,10 @@ async function signUp(firstName, lastName, username, password) {
 async function logIn(username, password) {
     try {
         const snapshot = await db.collection('users').where('username', '==', username).limit(1).get();
-        if (snapshot.empty) throw new Error('User not found');
+        if (snapshot.empty) {
+            alert('No accounts found');
+            throw new Error('No accounts found');
+        }
 
         const userData = snapshot.docs[0].data();
         const email = userData.email;
@@ -47,7 +50,9 @@ async function logIn(username, password) {
         return user;
     } catch (error) {
         console.error('Login error:', error.message);
-        alert('Login failed: ' + error.message);
+        if (error.message !== 'No accounts found') {
+            alert('Login failed: ' + error.message);
+        }
         throw error;
     }
 }
