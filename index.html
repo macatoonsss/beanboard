@@ -244,6 +244,7 @@
                             </button>
                         </div>
                         <button type="submit" class="btnlogin">LOG IN</button>
+                        <p id="loginError" style="color:#f39d2d; text-align:center; font-size:13px; margin-top:5px;"></p>
                         <p style="color: white; text-align: center; margin-top: 10px; font-size: 12px;">
                             Don't have an account? <a href="#" onclick="showSignup()" style="color: #f39d2d;">Sign Up</a>
                         </p>
@@ -318,18 +319,22 @@
 
                         async function handleLogin(event) {
                             event.preventDefault();
-                            console.log('handleLogin clicked');
                             const username = document.getElementById('username').value;
                             const password = document.getElementById('password').value;
+                            const errorEl = document.getElementById('loginError');
+
+                            errorEl.textContent = ""; // clear previous error
 
                             try {
                                 await logIn(username, password);
-                                // Redirect to main page after successful login
+                                // Redirect after successful login
                                 setTimeout(() => {
                                     window.location.href = 'main.html';
-                                }, 1000);
+                                }, 500);
                             } catch (error) {
                                 console.error('Login failed:', error);
+                                // Show friendly message instead of alert
+                                errorEl.textContent = "Invalid account";
                             }
                         }
 
@@ -363,6 +368,12 @@
                                 // User is logged in, redirect to main page
                                 window.location.href = 'main.html';
                             }
+                        });
+                        document.getElementById('username').addEventListener('input', () => {
+                            document.getElementById('loginError').textContent = "";
+                        });
+                        document.getElementById('password').addEventListener('input', () => {
+                            document.getElementById('loginError').textContent = "";
                         });
                     </script>
 
