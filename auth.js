@@ -43,3 +43,14 @@ async function logIn(username, password) {
         throw error;
     }
 }
+
+async function logOut() {
+    try {
+        await auth.signOut();
+        localStorage.removeItem('userId');
+        localStorage.removeItem('userEmail');
+        window.location.href = 'index.html';
+    } catch (error) {
+        console.error('Logout error:', error);
+    }
+}
