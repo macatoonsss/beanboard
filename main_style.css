@@ -19,9 +19,10 @@
         }
 
         .nav-wrapper{
-            display:flex;
-            justify-content:center;
-            align-items:center;
+            display: flex;
+            align-items: center;
+            justify-content: center; /* keep center for logo */
+            position: relative; /* needed for absolute positioning */
         }
 
         .nav-logo{
@@ -47,6 +48,10 @@
             position: sticky;
             top:0;
             overflow-y:auto;
+            
+            display: flex;
+            flex-direction: column;
+            height: 100vh; /* full screen height */
         }
 
         .sidebar h5{
@@ -61,7 +66,161 @@
         .sidebar h5:hover{
             background:rgba(255,255,255,0.1);
         }
+        
+        .menuu {
+            display: flex;
+            flex-direction: column;
+            flex: 1; /* takes all available space */
+        }
 
+        .profile {
+            display: flex;
+            flex-direction: column; /* 🔥 stack top + info */
+            gap: 8px;
+            width: 100%;
+        }
+        .profile-top {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .info {
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+            margin-left: 2px;
+        }
+        
+        .avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%; /* makes it round */
+            object-fit: cover; /* prevents stretching */
+        }
+        .profname {
+            font-weight: bold;
+            font-size: 17px;
+            white-space: nowrap;   /* keep it in one line */
+            overflow: visible;     /* 🔥 allow overflow */
+            text-overflow: clip;   /* 🔥 no "..." */
+            max-width: none;       /* 🔥 remove restriction */
+        }
+        .profusername {
+            margin-top: -4px;
+            color: gray;
+            font-size: 13px;
+        }
+
+        .profilelogout {
+            margin-top: auto;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+
+            position: relative;
+            width: 100%;
+            padding-right: 40px; /* space for icon */
+        }
+        
+        .profilelogout a {
+            display: flex;              /* makes it fill + align content */
+            align-items: center;
+            justify-content: space-between;
+
+            width: 100%;
+            height: 100%;
+
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .logout-icon {
+            position: absolute;
+            right: 10px;   /* pinaka-right edge */
+            top: 50%;
+            transform: translateY(-50%);
+
+            font-size: 18px;
+            opacity: 0.7;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .logout-icon:hover {
+            opacity: 1;
+            transform: translateY(-50%) scale(1.1);
+        }
+
+        .profile-stats {
+            display: flex;
+            flex: 1;
+            justify-content: space-between;
+            text-align: center;
+        }
+
+        .stat {
+            flex: 1;
+        }
+        .stat-number {
+            display: block;
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        .stat-label {
+            display: block;
+            font-size: 11px;
+            color: #999898;
+        }
+
+                .sidenav {
+            /*background-color: #dcdbdb7c !important;*/
+            background-color: #dcdbdb7c !important;
+            padding: 0;
+        }
+        .avc {
+            padding: 10px;
+        }
+        .sidenav .tab {
+            padding: 5px 0;
+            margin: 0;
+        }
+        .sidenav .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 0px; 
+            padding: 8px 12px; 
+        }
+        .sidenav .nav-link span {
+            margin: 0;
+            color: #ffffff;
+        }
+        .sidenav .nav-link:hover {
+            background-color: #fdfdfd16; 
+        }
+
+        .sidenav .nav-link:hover span {
+            opacity: 1;
+            transform: translateY(-7%);
+        }
+
+        .sidenav .nav-link:hover .nav-icon {
+            opacity: 1;
+            transform: translateY(-7%); 
+        }
+        .nav-icon {
+            margin-left: 10px !important;
+            color: #ffffff !important;
+            font-size: 26px;
+        }
+        .nav-link span {
+            font-family: 'Roboto', sans-serif;
+            font-weight:700;
+            font-size: 18px;
+            margin-left: -10px !important;
+            color: #ffffff;
+        }
         /* RIGHT PANE */
         .rpane {
             padding:25px;
@@ -131,7 +290,7 @@
             display: flex;
             align-items: center;
             justify-content: center; /* <-- centers horizontally */
-            margin-top: -15px;
+            margin-top: -20px;
             margin-bottom: 10px;
             gap: 0px;
         }
@@ -310,8 +469,8 @@
 
         /* Profile picture */
         .commentor-profile{
-            width:32px;
-            height:32px;
+            width:40px !important;
+            height:40px !important;
             border-radius:50%;
             object-fit:cover;
         }
@@ -364,6 +523,22 @@
             width: 100%;
             backdrop-filter: blur(5px);
         }
+
+        .comment-texttext {
+            background: rgba(255, 255, 255, 0.15);
+            padding: 5px 10px;
+            border-radius: 15px;
+
+            display: flex;
+            flex-direction: column; /* ✅ THIS FIXES IT */
+            align-items: flex-start; /* align text to left */
+            
+            gap: 3px;
+            width: auto;
+
+            backdrop-filter: blur(5px);
+        }
+
         .comment-input {
             flex: 1;                    
             background: transparent;    
@@ -443,9 +618,8 @@
         }
 
         .follow-btn:hover {
-            background-color: #0d8ddb;
-            color: #ffffff;
-
+            opacity: 1;
+            transform: translateY(-2px) scale(1.05);
         }
 
         .tophashtag p {
@@ -478,6 +652,9 @@
                 display: none !important;
             }
 
+            .brand {
+                margin-top: -10px;
+            }
             .feed {
                 width: 100%;
                 border-right: none;
@@ -528,6 +705,9 @@
             }
             .fyp, .flg {
                 margin-top: -25px !important;
+            }
+            .post:last-child {
+                margin-bottom: 60px !important;
             }
         }
         

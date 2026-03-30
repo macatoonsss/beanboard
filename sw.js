@@ -1,7 +1,7 @@
 const CACHE_NAME = "kimi-cache-v1";
 const urlsToCache = [
     "/",
-    "/index.html",
+    "/index.php",
     "/style.css",
     "/Images/LOGO.png"
 ];
