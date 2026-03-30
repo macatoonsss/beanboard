@@ -8,5 +8,5 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true
   },
-  "include": ["utils/**/*.ts"]
+  "include": ["src/**/*.ts", "utils/**/*.ts"]
 }
