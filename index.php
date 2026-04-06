@@ -1,41 +1,4 @@
-<?php
-session_start();
-include 'db.php'; // include database connection
 
-$error = "";
-
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-
-    $username = $mysqli->real_escape_string($_POST['username']);
-    $password = $mysqli->real_escape_string($_POST['password']);
-
-    // Query database
-    $sql = "SELECT * FROM users WHERE username='$username' AND password='$password' LIMIT 1";
-    $result = $mysqli->query($sql);
-
-    if ($result && $result->num_rows === 1) {
-
-        // Fetch user (optional but useful if you expand later)
-        $user = $result->fetch_assoc();
-
-        // Set session
-        $_SESSION['username'] = $username;
-
-        // Update last login time (SAFE VERSION)
-        $stmt = $mysqli->prepare("UPDATE users SET last_login = NOW() WHERE username = ?");
-        $stmt->bind_param("s", $username);
-        $stmt->execute();
-        $stmt->close();
-
-        // Redirect
-        header("Location: main.php");
-        exit;
-
-    } else {
-        $error = "Invalid username or password!";
-    }
-}
-?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -60,7 +23,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <link rel="stylesheet" href="index_style.css">
-    <title>KIMI</title>
+    <title>BeanBoard</title>
 </head>
 
 <body>
@@ -109,10 +72,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                     <button type="submit" class="btnlogin">LOG IN</button>
                 </form>
-
-                <?php if($error != ""): ?>
-                    <p style="color:red;"><?php echo $error; ?></p>
-                <?php endif; ?>
 
             </div>
         </div>
