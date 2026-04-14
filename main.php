@@ -156,7 +156,14 @@ $user_result = $stmt->get_result();
             <i class="fa-solid fa-circle-info nav-icon"></i>
             <span>Notifications</span>
         </a>
-    </li>    
+    </li> 
+    
+    <div class="profilelogout" style="border-radius:20px; background:rgba(255,255,255,0.1); padding:10px;">
+        <a href="?logout=1" style="color: inherit; text-decoration: none;">
+            LOGOUT
+            <i class="fa-solid fa-right-from-bracket logout-icon"></i>
+        </a>
+    </div>
 </ul>
 
     <main>
